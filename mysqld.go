@@ -5,21 +5,23 @@ import (
 	"fmt"
 )
 
-var DB = sql.DB{}
+type CONN struct {
+	DB  sql.DB
+	err error
+}
 
-func InitDB(ip, port, user, pwd, dbname, charset string) (sql.DB, error) {
+func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) {
 	url := user + ":" + pwd + "@" + "tcp(" + ip + ":" + port + ")/" + dbname + "?charset=" + charset
-	db, err := sql.Open("mysql", url)
-	if err != nil {
+	&c.DB, c.err = sql.Open("mysql", url)
+	if c.err != nil {
 		fmt.Println("mysql init fail")
 	} else {
 		fmt.Println("mysql init success")
 	}
-	return *db, err
 }
 
-func Query(text string) ([]map[string]string, error) {
-	rows, err := DB.Query(text)
+func (c *CONN) Query(text string) ([]map[string]string, error) {
+	rows, err := c.DB.Query(text)
 	result := make([]map[string]string, 0)
 	if err != nil {
 		return result, err
@@ -44,8 +46,8 @@ func Query(text string) ([]map[string]string, error) {
 	return result, err
 }
 
-func Update(text string) (int64, error) {
-	tx, err := DB.Begin()
+func (c *CONN) Update(text string) (int64, error) {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return 0, err
 	}
@@ -58,8 +60,8 @@ func Update(text string) (int64, error) {
 	return rows, err
 }
 
-func Insert(text string) (int64, error) {
-	tx, err := DB.Begin()
+func (c *CONN) Insert(text string) (int64, error) {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return 0, err
 	}
@@ -72,8 +74,8 @@ func Insert(text string) (int64, error) {
 	return id, err
 }
 
-func Delete(text string) (int64, error) {
-	tx, err := DB.Begin()
+func (c *CONN) Delete(text string) (int64, error) {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return 0, err
 	}
