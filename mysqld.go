@@ -1,6 +1,7 @@
 package go_simple_sql
 
 import (
+	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 )
 
@@ -9,9 +10,9 @@ type CONN struct {
 }
 
 func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) error {
-	var err error
 	url := user + ":" + pwd + "@" + "tcp(" + ip + ":" + port + ")/" + dbname + "?charset=" + charset
-	&c.DB, err = sql.Open("mysql", url)
+	db, err := sql.Open("mysql", url)
+	c.DB = *db
 	return err
 }
 
