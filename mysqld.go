@@ -6,18 +6,16 @@ import (
 )
 
 type CONN struct {
-	DB  sql.DB
-	Err error
+	DB sql.DB
 }
 
-func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) {
+func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) error {
 	url := user + ":" + pwd + "@" + "tcp(" + ip + ":" + port + ")/" + dbname + "?charset=" + charset
 	db, err := sql.Open("mysql", url)
 	if err != nil {
 		fmt.Println("mysql init fail")
 	} else {
 		c.DB = *db
-		c.Err = err
 		fmt.Println("mysql init success")
 	}
 }
