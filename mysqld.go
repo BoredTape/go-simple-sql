@@ -12,10 +12,12 @@ type CONN struct {
 
 func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) {
 	url := user + ":" + pwd + "@" + "tcp(" + ip + ":" + port + ")/" + dbname + "?charset=" + charset
-	&c.DB, c.err = sql.Open("mysql", url)
+	db, err := sql.Open("mysql", url)
 	if c.err != nil {
 		fmt.Println("mysql init fail")
 	} else {
+		c.DB = *db
+		c.err = err
 		fmt.Println("mysql init success")
 	}
 }
