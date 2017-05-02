@@ -6,7 +6,7 @@ import (
 )
 
 type CONN struct {
-	DB  sql.DB
+	session  sql.DB
 	err error
 }
 
@@ -16,14 +16,14 @@ func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) {
 	if c.err != nil {
 		fmt.Println("mysql init fail")
 	} else {
-		c.DB = *db
+		c.session = *db
 		c.err = err
 		fmt.Println("mysql init success")
 	}
 }
 
 func (c *CONN) Query(text string) ([]map[string]string, error) {
-	rows, err := c.DB.Query(text)
+	rows, err := c.session.Query(text)
 	result := make([]map[string]string, 0)
 	if err != nil {
 		return result, err
@@ -49,7 +49,7 @@ func (c *CONN) Query(text string) ([]map[string]string, error) {
 }
 
 func (c *CONN) Update(text string) (int64, error) {
-	tx, err := c.DB.Begin()
+	tx, err := c.session.Begin()
 	if err != nil {
 		return 0, err
 	}
@@ -63,7 +63,7 @@ func (c *CONN) Update(text string) (int64, error) {
 }
 
 func (c *CONN) Insert(text string) (int64, error) {
-	tx, err := c.DB.Begin()
+	tx, err := c.session.Begin()
 	if err != nil {
 		return 0, err
 	}
@@ -77,7 +77,7 @@ func (c *CONN) Insert(text string) (int64, error) {
 }
 
 func (c *CONN) Delete(text string) (int64, error) {
-	tx, err := c.DB.Begin()
+	tx, err := c.session.Begin()
 	if err != nil {
 		return 0, err
 	}
