@@ -13,7 +13,7 @@ type CONN struct {
 func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) {
 	url := user + ":" + pwd + "@" + "tcp(" + ip + ":" + port + ")/" + dbname + "?charset=" + charset
 	db, err := sql.Open("mysql", url)
-	if c.err != nil {
+	if err != nil {
 		fmt.Println("mysql init fail")
 	} else {
 		c.DB = *db
