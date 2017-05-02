@@ -18,6 +18,7 @@ func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) error {
 		c.DB = *db
 		fmt.Println("mysql init success")
 	}
+	return err
 }
 
 func (c *CONN) Query(text string) ([]map[string]string, error) {
