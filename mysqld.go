@@ -1,1 +1,87 @@
 package go_simple_sql
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+var DB = sql.DB{}
+
+func InitDB(ip, port, user, pwd, dbname, charset string) (sql.DB, error) {
+	url := user + ":" + pwd + "@" + "tcp(" + ip + ":" + port + ")/" + dbname + "?charset=" + charset
+	db, err := sql.Open("mysql", url)
+	if err != nil {
+		fmt.Println("mysql init fail")
+	} else {
+		fmt.Println("mysql init success")
+	}
+	return *db, err
+}
+
+func Query(text string) ([]map[string]string, error) {
+	rows, err := DB.Query(text)
+	result := make([]map[string]string, 0)
+	if err != nil {
+		return result, err
+	}
+	columns, _ := rows.Columns()
+	scanArgs := make([]interface{}, len(columns))
+	values := make([]interface{}, len(columns))
+	for i := range values {
+		scanArgs[i] = &values[i]
+	}
+
+	for rows.Next() {
+		err = rows.Scan(scanArgs...)
+		record := make(map[string]string)
+		for i, col := range values {
+			if col != nil {
+				record[columns[i]] = string(col.([]byte))
+			}
+		}
+		result = append(result, record)
+	}
+	return result, err
+}
+
+func Update(text string) (int64, error) {
+	tx, err := DB.Begin()
+	if err != nil {
+		return 0, err
+	}
+	result, err := tx.Exec(text)
+	if err != nil {
+		return 0, err
+	}
+	tx.Commit()
+	rows, err := result.RowsAffected()
+	return rows, err
+}
+
+func Insert(text string) (int64, error) {
+	tx, err := DB.Begin()
+	if err != nil {
+		return 0, err
+	}
+	result, err := tx.Exec(text)
+	if err != nil {
+		return 0, err
+	}
+	tx.Commit()
+	id, err := result.LastInsertId()
+	return id, err
+}
+
+func Delete(text string) (int64, error) {
+	tx, err := DB.Begin()
+	if err != nil {
+		return 0, err
+	}
+	result, err := tx.Exec(text)
+	if err != nil {
+		return 0, err
+	}
+	tx.Commit()
+	rows, err := result.RowsAffected()
+	return rows, err
+}
