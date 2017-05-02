@@ -2,7 +2,6 @@ package go_simple_sql
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 type CONN struct {
@@ -10,14 +9,9 @@ type CONN struct {
 }
 
 func (c *CONN) InitDB(ip, port, user, pwd, dbname, charset string) error {
+	var err error
 	url := user + ":" + pwd + "@" + "tcp(" + ip + ":" + port + ")/" + dbname + "?charset=" + charset
-	db, err := sql.Open("mysql", url)
-	if err != nil {
-		fmt.Println("mysql init fail")
-	} else {
-		c.DB = *db
-		fmt.Println("mysql init success")
-	}
+	&c.DB, err = sql.Open("mysql", url)
 	return err
 }
 
